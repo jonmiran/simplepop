@@ -16,38 +16,26 @@ import java.net.Socket;
 
 public class SocketServer extends Thread {
 
-	/*
-	 * Our server starts here
-	 */
-	public static void main(String[] argv) throws IOException {
-		new SocketServer().start();
-	}
-
-	/*
-	 * Time out
-	 */
+	/* Time out */
 	final static int TIME_OUT = 1;
 
-	/*
-	 * Port to listen on
-	 */
+	/* Port to listen on */
 	public final static int TCP_PORT = 110;
 
-	/*
-	 * server socket
-	 */
+	/* server socket */
 	private ServerSocket ss;
 
-	/*
-	 * Constructor
-	 */
+	/* Constructor */
 	public SocketServer() throws IOException {
 		ss = new ServerSocket(TCP_PORT);
 	}
 
-	/*
-	 * Run method from Thread
-	 */
+	/* Our server starts here */
+	public static void main(String[] argv) throws IOException {
+		new SocketServer().start();
+	}
+
+	/* Run method from Thread */
 	public void run() {
 		while (true) {
 			try {
