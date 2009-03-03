@@ -14,14 +14,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class SocketServer extends Thread {
+	
+    private static String state;
 
 	private static BufferedReader input;
 
 	private static BufferedWriter output;
 
 	private static Socket client = null;
+
+	private static HashMap<String, String> users = null;
 
 	/* Time out */
 	final static int TIME_OUT = 1;
@@ -35,6 +40,10 @@ public class SocketServer extends Thread {
 	/* Constructor */
 	public SocketServer() throws IOException {
 		ss = new ServerSocket(TCP_PORT);
+		users = new HashMap<String, String>();
+		users.put("gunni", "1234");
+		users.put("svenni", "1234");
+		users.put("palli", "1234");		
 	}
 
 	/* Our server starts here */
@@ -56,7 +65,10 @@ public class SocketServer extends Thread {
 				System.err.println("Doh! " + e);
 			}
 
-			sendClientString("+OK Welcome to a POP3Server in java.");
+			sendClientString("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
+			
+			sendClientString("+OK valid username now send PASS");
+    		sendClientString("+OK your pass is fine!");
 		}
 	}
 
@@ -97,4 +109,18 @@ public class SocketServer extends Thread {
 			}
 		}
 	}
+
+
+    public boolean doLogin(HashMap<String, String> users, String user, String password)
+    {
+
+    	if (password.equalsIgnoreCase(users.get(user))) {
+    		sendClientString("+OK valid username now send PASS");
+    		sendClientString("+OK your pass is fine!");
+    		return true;
+    	} else {
+    		return false;
+    	}
+	}
+
 }
