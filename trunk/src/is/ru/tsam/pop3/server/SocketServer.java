@@ -17,8 +17,8 @@ import java.net.Socket;
 import java.util.HashMap;
 
 public class SocketServer extends Thread {
-	
-    private static String state;
+
+	private static String state;
 
 	private static BufferedReader input;
 
@@ -53,9 +53,10 @@ public class SocketServer extends Thread {
 
 	/* Run method from Thread */
 	public void run() {
+		System.out.println(SocketServer.class.getSimpleName() + " waiting for connection on TCP port " + TCP_PORT);
 		while (true) {
 			try {
-				System.out.println(SocketServer.class.getSimpleName() + " waiting for connection on TCP port " + TCP_PORT);
+				
 				client = ss.accept();
 
 				input = new BufferedReader(new InputStreamReader(client.getInputStream()));
@@ -65,10 +66,19 @@ public class SocketServer extends Thread {
 				System.err.println("Doh! " + e);
 			}
 
-			sendClientString("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
-			
-			sendClientString("+OK valid username now send PASS");
-    		sendClientString("+OK your pass is fine!");
+			sendMessageToClient("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
+
+			state = "authorization";
+
+
+			sendMessageToClient("+OK valid username now send PASS");
+			sendMessageToClient("+OK your pass is fine!");
+		}
+	}
+
+	public void work() {
+		while (true) {
+
 		}
 	}
 
@@ -76,51 +86,46 @@ public class SocketServer extends Thread {
 		System.out.println(output);
 	}
 
-	public void sendClientString(String theString) {
+	public void sendMessageToClient(String message) {
 		try {
-			output.write(theString + "\r\n");
+			output.write(message + "\r\n");
 			output.flush();
 
-			if(client!=null) {
-				output(client.getRemoteSocketAddress() + " < " + theString);
+			if(client != null) {
+				output(client.getRemoteSocketAddress() + " < " + message);
 			}
 		} catch (IOException e) {
-			if(client!=null) {
+			if(client != null) {
 				StackTraceElement[] element = e.getStackTrace();
-				output( client.getRemoteSocketAddress() + " IOException writing to client -> " + element[0]);
+				output(client.getRemoteSocketAddress() + " IOException writing to client -> " + element[0]);
 			}
-			//reset it all after the error
 			resetConnection();
 		}
 	}
 
 	private void resetConnection() {
-		//close up
 		try {
-			if(client!=null) {
+			if(client != null) {
 				client.close();
-				client=null;
+				client = null;
 			}
 		} catch(IOException e) {
-			if(client!=null) {
+			if(client != null) {
 				StackTraceElement[] element = e.getStackTrace();
 				output( client.getRemoteSocketAddress() + " Exception while closing. \n" + element[0]);
-				client=null;
+				client = null;
 			}
 		}
 	}
 
-
-    public boolean doLogin(HashMap<String, String> users, String user, String password)
-    {
-
-    	if (password.equalsIgnoreCase(users.get(user))) {
-    		sendClientString("+OK valid username now send PASS");
-    		sendClientString("+OK your pass is fine!");
-    		return true;
-    	} else {
-    		return false;
-    	}
+	public boolean doLogin(HashMap<String, String> users, String user, String password) {
+		if (password.equalsIgnoreCase(users.get(user))) {
+			sendMessageToClient("+OK valid username now send PASS");
+			sendMessageToClient("+OK your pass is fine!");
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
