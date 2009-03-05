@@ -16,9 +16,17 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
+interface ServerState {
+	int Authorize = 1;
+	int Transaction = 2;
+	int Update = 3;
+	int Quit = 4;
+	int Reciving = 5;
+}
+
 public class SocketServer extends Thread {
 
-	private static String state;
+	private static int state;
 
 	private static BufferedReader input;
 
@@ -54,30 +62,67 @@ public class SocketServer extends Thread {
 	/* Run method from Thread */
 	public void run() {
 		System.out.println(SocketServer.class.getSimpleName() + " waiting for connection on TCP port " + TCP_PORT);
-		while (true) {
-			try {
-				
-				client = ss.accept();
+		//while (true) {
+		try {
 
-				input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-				output = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+			client = ss.accept();
 
-			} catch (IOException e) {
-				System.err.println("Doh! " + e);
-			}
+			input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			output = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
-			sendMessageToClient("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
-
-			state = "authorization";
-
-
-			sendMessageToClient("+OK valid username now send PASS");
-			sendMessageToClient("+OK your pass is fine!");
+		} catch (IOException e) {
+			System.err.println("Doh! " + e);
 		}
+
+		sendMessageToClient("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
+
+		state = ServerState.Authorize;
+
+		try {
+			work();
+		} catch (Exception e) {
+			System.out.println(e);
+			reset();
+		}
+		reset();
+		//}
+
 	}
 
-	public void work() {
+	public void work() throws IOException {
 		while (true) {
+
+			if (state == ServerState.Authorize) {
+				sendMessageToClient("+OK valid username now send PASS");
+				sendMessageToClient("+OK your pass is fine!");
+				sendMessageToClient("+OK maildrop locked and ready");
+				state = ServerState.Transaction;
+			} else if (state == ServerState.Transaction) {
+
+				String line = input.readLine();
+
+				if (line.startsWith("STAT")) { // STAT
+					sendMessageToClient("+OK 2 320");
+				} else if (line.startsWith("LIST")) { // LIST
+					sendMessageToClient("+OK 2 messages (320 octets)");
+					sendMessageToClient("1 120");
+					sendMessageToClient("2 200");
+				} else if (line.startsWith("RETR")) { // RETR
+					sendMessageToClient("+OK 120 octets");
+					sendMessageToClient("+OK 200 octets");
+				} else if (line.startsWith("DELE")) { // DELE
+					sendMessageToClient("+OK message 1 deleted");
+				} else if (line.startsWith("NOOP")) { // NOOP
+					sendMessageToClient("+OK");
+				} else if (line.startsWith("REST")) { // REST
+					sendMessageToClient("+OK maildrop has 2 messages (320 octets)");
+				} else if (line.startsWith("AUTH")) {
+					sendMessageToClient("+OK auth");
+				}
+
+			} else if (state == ServerState.Update) {
+
+			}
 
 		}
 	}
@@ -99,11 +144,11 @@ public class SocketServer extends Thread {
 				StackTraceElement[] element = e.getStackTrace();
 				output(client.getRemoteSocketAddress() + " IOException writing to client -> " + element[0]);
 			}
-			resetConnection();
+			reset();
 		}
 	}
 
-	private void resetConnection() {
+	private void reset() {
 		try {
 			if(client != null) {
 				client.close();
