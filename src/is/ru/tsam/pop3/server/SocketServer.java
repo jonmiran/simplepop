@@ -99,16 +99,16 @@ public class SocketServer extends Thread {
 				
 				if (line.startsWith("USER")) {
 					sendMessageToClient("+OK valid username now send PASS\r\n");
-					sendMessageToClient("\r\n");
+					sendMessageToClient(".\r\n");
 				}	else if (line.startsWith("PASS")) {
 					sendMessageToClient("+OK your pass is fine!\r\n");
-					sendMessageToClient("\r\n");
+					sendMessageToClient(".\r\n");
 				}	else if (line.startsWith("AUTH")) {
 					sendMessageToClient("-ERR\r\n");
-					sendMessageToClient("\r\n");
+					sendMessageToClient(".\r\n");
 				} 	else if (line.startsWith("CAPA")) {
 					sendMessageToClient("-ERR\r\n");
-					sendMessageToClient("\r\n");
+					sendMessageToClient(".\r\n");
 				}
 				//sendMessageToClient("+OK maildrop locked and ready");
 				state = ServerState.Transaction;
