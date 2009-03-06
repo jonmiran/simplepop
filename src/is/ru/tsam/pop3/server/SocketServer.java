@@ -100,6 +100,7 @@ public class SocketServer extends Thread {
 			} else if (state == ServerState.Transaction) {
 
 				String line = input.readLine();
+				System.out.println(line);
 
 				if (line.startsWith("STAT")) { // STAT
 					sendMessageToClient("+OK 2 320");
@@ -117,7 +118,9 @@ public class SocketServer extends Thread {
 				} else if (line.startsWith("REST")) { // REST
 					sendMessageToClient("+OK maildrop has 2 messages (320 octets)");
 				} else if (line.startsWith("AUTH")) {
-					sendMessageToClient("+OK auth");
+					sendMessageToClient("-ERR");
+				} else if (line.startsWith("CAPA")) {
+					sendMessageToClient("-ERR");
 				}
 
 			} else if (state == ServerState.Update) {
