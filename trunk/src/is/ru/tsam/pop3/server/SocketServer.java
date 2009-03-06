@@ -98,9 +98,13 @@ public class SocketServer extends Thread {
 				System.out.println(line);
 				
 				if (line.startsWith("USER")) {
-					sendMessageToClient("-ERR");//("+OK valid username now send PASS");
+					sendMessageToClient("+OK valid username now send PASS");
 				}	else if (line.startsWith("PASS")) {
-					sendMessageToClient("-ERR");//("+OK your pass is fine!");
+					sendMessageToClient("+OK your pass is fine!");
+				}	else if (line.startsWith("AUTH")) {
+					sendMessageToClient("-ERR");
+				} 	else if (line.startsWith("CAPA")) {
+					sendMessageToClient("-ERR");
 				}
 				//sendMessageToClient("+OK maildrop locked and ready");
 				state = ServerState.Transaction;
