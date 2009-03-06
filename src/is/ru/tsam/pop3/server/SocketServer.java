@@ -98,16 +98,16 @@ public class SocketServer extends Thread {
 				System.out.println(line);
 				
 				if (line.startsWith("USER")) {
-					sendMessageToClient("+OK valid username now send PASS \r\n");
+					sendMessageToClient("+OK valid username now send PASS\r\n");
 					sendMessageToClient("\r\n");
 				}	else if (line.startsWith("PASS")) {
-					sendMessageToClient("+OK your pass is fine! \r\n");
+					sendMessageToClient("+OK your pass is fine!\r\n");
 					sendMessageToClient("\r\n");
 				}	else if (line.startsWith("AUTH")) {
-					sendMessageToClient("-ERR \r\n");
+					sendMessageToClient("-ERR\r\n");
 					sendMessageToClient("\r\n");
 				} 	else if (line.startsWith("CAPA")) {
-					sendMessageToClient("-ERR \r\n");
+					sendMessageToClient("-ERR\r\n");
 					sendMessageToClient("\r\n");
 				}
 				//sendMessageToClient("+OK maildrop locked and ready");
