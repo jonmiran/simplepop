@@ -90,11 +90,12 @@ public class SocketServer extends Thread {
 	}
 
 	public void work() throws IOException {
+		String line = "";
 		while (true) {
 
 			if (state == ServerState.Authorize) {
 				
-				String line = input.readLine();
+				line = input.readLine();
 				System.out.println(line);
 				
 				if (line.startsWith("USER")) {
@@ -103,6 +104,7 @@ public class SocketServer extends Thread {
 				}	else if (line.startsWith("PASS")) {
 					sendMessageToClient("+OK your pass is fine!\r\n");
 					sendMessageToClient(".\r\n");
+					state = ServerState.Transaction;
 				}	else if (line.startsWith("AUTH")) {
 					sendMessageToClient("-ERR\r\n");
 					sendMessageToClient(".\r\n");
@@ -111,10 +113,10 @@ public class SocketServer extends Thread {
 					sendMessageToClient(".\r\n");
 				}
 				//sendMessageToClient("+OK maildrop locked and ready");
-				state = ServerState.Transaction;
+				//state = ServerState.Transaction;
 			} else if (state == ServerState.Transaction) {
 
-				String line = input.readLine();
+				line = input.readLine();
 				System.out.println(line);
 
 				if (line.startsWith("STAT")) { // STAT
