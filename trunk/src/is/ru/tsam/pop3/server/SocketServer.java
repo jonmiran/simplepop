@@ -4,7 +4,7 @@
 package is.ru.tsam.pop3.server;
 
 /**
- * @author gunnl
+ * @author Gunni, Svenni og Palli
  *
  */
 import java.io.BufferedReader;
