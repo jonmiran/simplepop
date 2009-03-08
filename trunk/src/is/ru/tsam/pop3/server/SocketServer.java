@@ -116,16 +116,16 @@ public class SocketServer extends Thread {
 
 				if (line.startsWith("USER")) {
 					sendMessageToClient("+OK valid username now send PASS\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				}
 				else if (line.startsWith("PASS")) {
 					sendMessageToClient("+OK your pass is fine!\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 					state = ServerState.Transaction;
 				} 
 				else {
 					sendMessageToClient("-ERR\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				}
 
 				//sendMessageToClient("+OK maildrop locked and ready");
@@ -137,15 +137,15 @@ public class SocketServer extends Thread {
 
 				if (line.startsWith("STAT")) { // STAT
 					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("LIST")) { // LIST
 					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 
 					for (int i = 0; i < fileArray.size(); i++) {
 						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
-						sendMessageToClient(".\r\n");
+						//sendMessageToClient(".\r\n");
 					}
 
 				} 
@@ -157,28 +157,28 @@ public class SocketServer extends Thread {
 					
 					for (int i = 0; i < fileArray.size(); i++) {
 						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
-						sendMessageToClient(".\r\n");
+						//sendMessageToClient(".\r\n");
 						sendMessageToClient(getOneMailMessage(fileArray.get(i)));
-						sendMessageToClient(".\r\n");
+						//sendMessageToClient(".\r\n");
 					}
 
 					
 				} 
 				else if (line.startsWith("DELE")) { // DELE
 					sendMessageToClient("+OK message 1 deleted\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("NOOP")) { // NOOP
 					sendMessageToClient("+OK\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("REST")) { // REST
 					sendMessageToClient("+OK maildrop has " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				} 
 				else {
 					sendMessageToClient("-ERR\r\n");
-					sendMessageToClient(".\r\n");
+					//sendMessageToClient(".\r\n");
 				}
 
 			} else if (state == ServerState.Update) {
