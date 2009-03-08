@@ -5,6 +5,7 @@ package is.ru.tsam.pop3.server;
 
 /**
  * @author Gunni, Svenni og Palli.
+ * Skilaverkefni 2 TSAM
  *
  */
 import java.io.BufferedReader;
