@@ -116,20 +116,15 @@ public class SocketServer extends Thread {
 
 				if (line.startsWith("USER")) {
 					sendMessageToClient("+OK valid username now send PASS\r\n");
-					//sendMessageToClient(".\r\n");
 				}
 				else if (line.startsWith("PASS")) {
 					sendMessageToClient("+OK your pass is fine!\r\n");
-					//sendMessageToClient(".\r\n");
 					state = ServerState.Transaction;
 				} 
 				else {
 					sendMessageToClient("-ERR\r\n");
-					//sendMessageToClient(".\r\n");
 				}
 
-				//sendMessageToClient("+OK maildrop locked and ready");
-				//state = ServerState.Transaction;
 			} else if (state == ServerState.Transaction) {
 
 				line = input.readLine();
@@ -137,48 +132,32 @@ public class SocketServer extends Thread {
 
 				if (line.startsWith("STAT")) { // STAT
 					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
-					//sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("LIST")) { // LIST
 					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
-					//sendMessageToClient(".\r\n");
 
 					for (int i = 0; i < fileArray.size(); i++) {
 						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
-						//sendMessageToClient(".\r\n");
 					}
-
+					sendMessageToClient(".");
 				} 
 				else if (line.startsWith("RETR")) { // RETR
-//					sendMessageToClient("+OK 120 octets\r\n");
-//					sendMessageToClient(".\r\n");
-//					sendMessageToClient("+OK 200 octets\r\n");
-//					sendMessageToClient(".\r\n");
-					
 					for (int i = 0; i < fileArray.size(); i++) {
 						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
-						//sendMessageToClient(".\r\n");
 						sendMessageToClient(getOneMailMessage(fileArray.get(i)));
-						//sendMessageToClient(".\r\n");
 					}
-
-					
 				} 
 				else if (line.startsWith("DELE")) { // DELE
 					sendMessageToClient("+OK message 1 deleted\r\n");
-					//sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("NOOP")) { // NOOP
 					sendMessageToClient("+OK\r\n");
-					//sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("REST")) { // REST
 					sendMessageToClient("+OK maildrop has " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
-					//sendMessageToClient(".\r\n");
 				} 
 				else {
 					sendMessageToClient("-ERR\r\n");
-					//sendMessageToClient(".\r\n");
 				}
 
 			} else if (state == ServerState.Update) {
@@ -205,26 +184,6 @@ public class SocketServer extends Thread {
 		}
 		return buffer.toString();
 	}
-
-
-	//	public String getOneMailMessage(File file) {
-	//		byte [] b = null;
-	//		StringBuffer buffer = new StringBuffer();
-	//		
-	//		
-	//		try {
-	//			b = Files.getBytesFromFile(file);
-	//			for (int i = 0; i < b.length; i++) {
-	//				System.out.println(b[i]);
-	//				buffer.append(b[i]);
-	//			}
-	//		} catch (IOException e) {
-	//			// TODO Auto-generated catch block
-	//			return "-ERR\r\n";
-	//		}
-	//		
-	//		return buffer.toString();
-	//	}
 
 	public int fileSizeInOctets(File file) {
 		return (int) file.length();
