@@ -10,6 +10,7 @@ package is.ru.tsam.pop3.server;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -51,7 +52,7 @@ public class SocketServer extends Thread {
 
 	/* server socket */
 	private ServerSocket ss;
-	
+
 	/* number of mails */
 	private static ArrayList<File> fileArray = null;
 
@@ -65,6 +66,8 @@ public class SocketServer extends Thread {
 		fileArray = new ArrayList<File>();
 		fileArray.add(new File("mail.txt"));
 		fileArray.add(new File("mail_2.txt"));
+
+		getOneMailMessage(fileArray.get(0));
 	}
 
 	/* Our server starts here */
@@ -95,7 +98,7 @@ public class SocketServer extends Thread {
 			work();
 		} catch (Exception e) {
 			System.out.println(e);
-			reset();
+			//reset();
 		}
 		reset();
 		//}
@@ -139,18 +142,27 @@ public class SocketServer extends Thread {
 				else if (line.startsWith("LIST")) { // LIST
 					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
 					sendMessageToClient(".\r\n");
-					
+
 					for (int i = 0; i < fileArray.size(); i++) {
-						sendMessageToClient(i+1 + " " + fileSize(fileArray.get(i)) + "\r\n");
+						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
 						sendMessageToClient(".\r\n");
 					}
-					
+
 				} 
 				else if (line.startsWith("RETR")) { // RETR
-					sendMessageToClient("+OK 120 octets\r\n");
-					sendMessageToClient(".\r\n");
-					sendMessageToClient("+OK 200 octets\r\n");
-					sendMessageToClient(".\r\n");
+//					sendMessageToClient("+OK 120 octets\r\n");
+//					sendMessageToClient(".\r\n");
+//					sendMessageToClient("+OK 200 octets\r\n");
+//					sendMessageToClient(".\r\n");
+					
+					for (int i = 0; i < fileArray.size(); i++) {
+						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
+						sendMessageToClient(".\r\n");
+						sendMessageToClient(getOneMailMessage(fileArray.get(i)));
+						sendMessageToClient(".\r\n");
+					}
+
+					
 				} 
 				else if (line.startsWith("DELE")) { // DELE
 					sendMessageToClient("+OK message 1 deleted\r\n");
@@ -161,7 +173,7 @@ public class SocketServer extends Thread {
 					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("REST")) { // REST
-					sendMessageToClient("+OK maildrop has 2 messages (320 octets)\r\n");
+					sendMessageToClient("+OK maildrop has " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
 					sendMessageToClient(".\r\n");
 				} 
 				else {
@@ -175,23 +187,61 @@ public class SocketServer extends Thread {
 
 		}
 	}
-	
-	public int fileSize(File file) {
+
+	public String getOneMailMessage(File file) {
+		StringBuffer buffer = new StringBuffer(1000);
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file.getName()));
+			char[] buf = new char[1024];
+			int numRead=0;
+			while((numRead=reader.read(buf)) != -1){
+				String readData = String.valueOf(buf, 0, numRead);
+				buffer.append(readData);
+				buf = new char[1024];
+			}
+			reader.close();
+		} catch ( IOException e) {
+			return "";
+		}
+		return buffer.toString();
+	}
+
+
+	//	public String getOneMailMessage(File file) {
+	//		byte [] b = null;
+	//		StringBuffer buffer = new StringBuffer();
+	//		
+	//		
+	//		try {
+	//			b = Files.getBytesFromFile(file);
+	//			for (int i = 0; i < b.length; i++) {
+	//				System.out.println(b[i]);
+	//				buffer.append(b[i]);
+	//			}
+	//		} catch (IOException e) {
+	//			// TODO Auto-generated catch block
+	//			return "-ERR\r\n";
+	//		}
+	//		
+	//		return buffer.toString();
+	//	}
+
+	public int fileSizeInOctets(File file) {
 		return (int) file.length();
 	}
-	
+
 	public int numberOfMailMessages() {
 		return fileArray.size();
 	}
-	
+
 	public int getTotalMailSizeInOctets() {
 		int total = 0;
-		
+
 		for (int i = 0; i < fileArray.size(); i++) {
 			File f = fileArray.get(i);
 			total += f.length();
 		}
-		
+
 		return total;
 	}
 
@@ -231,14 +281,14 @@ public class SocketServer extends Thread {
 		}
 	}
 
-	public boolean doLogin(HashMap<String, String> users, String user, String password) {
-		if (password.equalsIgnoreCase(users.get(user))) {
-			sendMessageToClient("+OK valid username now send PASS");
-			sendMessageToClient("+OK your pass is fine!");
-			return true;
-		} else {
-			return false;
-		}
-	}
+	//	public boolean doLogin(HashMap<String, String> users, String user, String password) {
+	//		if (password.equalsIgnoreCase(users.get(user))) {
+	//			sendMessageToClient("+OK valid username now send PASS");
+	//			sendMessageToClient("+OK your pass is fine!");
+	//			return true;
+	//		} else {
+	//			return false;
+	//		}
+	//	}
 
 }
