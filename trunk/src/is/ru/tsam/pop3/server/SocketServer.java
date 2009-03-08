@@ -201,7 +201,7 @@ public class SocketServer extends Thread {
 			}
 			reader.close();
 		} catch ( IOException e) {
-			return "";
+			return "-ERR\r\n";
 		}
 		return buffer.toString();
 	}
