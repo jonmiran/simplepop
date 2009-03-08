@@ -65,7 +65,7 @@ public class SocketServer extends Thread {
 		users.put("palli", "12345");
 		fileArray = new ArrayList<File>();
 		fileArray.add(new File("mail.txt"));
-		fileArray.add(new File("mail_2.txt"));
+		//fileArray.add(new File("mail_2.txt"));
 
 		getOneMailMessage(fileArray.get(0));
 	}
@@ -100,7 +100,7 @@ public class SocketServer extends Thread {
 			System.out.println(e);
 			//reset();
 		}
-		reset();
+		//reset();
 		//}
 
 	}
@@ -122,7 +122,7 @@ public class SocketServer extends Thread {
 					state = ServerState.Transaction;
 				} 
 				else {
-					sendMessageToClient("-ERR\r\n");
+					sendMessageToClient("-ERR unidentified command\r\n");
 				}
 
 			} else if (state == ServerState.Transaction) {
@@ -143,8 +143,8 @@ public class SocketServer extends Thread {
 				} 
 				else if (line.startsWith("RETR")) { // RETR
 					for (int i = 0; i < fileArray.size(); i++) {
-						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
-						sendMessageToClient(getOneMailMessage(fileArray.get(i)));
+						sendMessageToClient("+OK " + i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
+						sendMessageToClient(getOneMailMessage(fileArray.get(i)) + "\r\n");
 						sendMessageToClient(".");
 					}
 				} 
@@ -157,8 +157,13 @@ public class SocketServer extends Thread {
 				else if (line.startsWith("REST")) { // REST
 					sendMessageToClient("+OK maildrop has " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
 				} 
+				else if (line.startsWith("QUIT")) 
+				{
+					sendMessageToClient("+OK bye");
+						reset();
+				}
 				else {
-					sendMessageToClient("-ERR\r\n");
+					sendMessageToClient("-ERR unidentified command\r\n");
 				}
 
 			} else if (state == ServerState.Update) {
@@ -240,15 +245,5 @@ public class SocketServer extends Thread {
 			}
 		}
 	}
-
-	//	public boolean doLogin(HashMap<String, String> users, String user, String password) {
-	//		if (password.equalsIgnoreCase(users.get(user))) {
-	//			sendMessageToClient("+OK valid username now send PASS");
-	//			sendMessageToClient("+OK your pass is fine!");
-	//			return true;
-	//		} else {
-	//			return false;
-	//		}
-	//	}
 
 }
