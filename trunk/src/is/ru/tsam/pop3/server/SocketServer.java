@@ -139,7 +139,7 @@ public class SocketServer extends Thread {
 					for (int i = 0; i < fileArray.size(); i++) {
 						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
 					}
-					sendMessageToClient(".");
+					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("RETR")) { // RETR
 					for (int i = 0; i < fileArray.size(); i++) {
