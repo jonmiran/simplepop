@@ -49,9 +49,9 @@ public class SocketServer extends Thread {
 	public SocketServer() throws IOException {
 		ss = new ServerSocket(TCP_PORT);
 		users = new HashMap<String, String>();
-		users.put("gunni", "1234");
-		users.put("svenni", "1234");
-		users.put("palli", "1234");		
+		users.put("gunni", "12345");
+		users.put("svenni", "12345");
+		users.put("palli", "12345");
 	}
 
 	/* Our server starts here */
@@ -105,13 +105,18 @@ public class SocketServer extends Thread {
 					sendMessageToClient("+OK your pass is fine!\r\n");
 					sendMessageToClient(".\r\n");
 					state = ServerState.Transaction;
-				}	else if (line.startsWith("AUTH")) {
-					sendMessageToClient("-ERR\r\n");
-					sendMessageToClient(".\r\n");
-				} 	else if (line.startsWith("CAPA")) {
+				} else {
 					sendMessageToClient("-ERR\r\n");
 					sendMessageToClient(".\r\n");
 				}
+				
+//				else if (line.startsWith("AUTH")) {
+//					sendMessageToClient("-ERR\r\n");
+//					sendMessageToClient(".\r\n");
+//				} 	else if (line.startsWith("CAPA")) {
+//					sendMessageToClient("-ERR\r\n");
+//					sendMessageToClient(".\r\n");
+//				}
 				//sendMessageToClient("+OK maildrop locked and ready");
 				//state = ServerState.Transaction;
 			} else if (state == ServerState.Transaction) {
@@ -134,11 +139,16 @@ public class SocketServer extends Thread {
 					sendMessageToClient("+OK");
 				} else if (line.startsWith("REST")) { // REST
 					sendMessageToClient("+OK maildrop has 2 messages (320 octets)");
-				} else if (line.startsWith("AUTH")) {
-					sendMessageToClient("-ERR");
-				} else if (line.startsWith("CAPA")) {
-					sendMessageToClient("-ERR");
+				} else {
+					sendMessageToClient("-ERR\r\n");
+					sendMessageToClient(".\r\n");
 				}
+				
+//				else if (line.startsWith("AUTH")) {
+//					sendMessageToClient("-ERR");
+//				} else if (line.startsWith("CAPA")) {
+//					sendMessageToClient("-ERR");
+//				}
 
 			} else if (state == ServerState.Update) {
 
