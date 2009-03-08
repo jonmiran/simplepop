@@ -9,11 +9,13 @@ package is.ru.tsam.pop3.server;
  */
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 interface ServerState {
@@ -49,6 +51,9 @@ public class SocketServer extends Thread {
 
 	/* server socket */
 	private ServerSocket ss;
+	
+	/* number of mails */
+	private static ArrayList<File> fileArray = null;
 
 	/* Constructor */
 	public SocketServer() throws IOException {
@@ -57,6 +62,8 @@ public class SocketServer extends Thread {
 		users.put("gunni", "12345");
 		users.put("svenni", "12345");
 		users.put("palli", "12345");
+		fileArray = new ArrayList<File>();
+		fileArray.add(new File("mail.txt"));
 	}
 
 	/* Our server starts here */
@@ -125,16 +132,24 @@ public class SocketServer extends Thread {
 				System.out.println(line);
 
 				if (line.startsWith("STAT")) { // STAT
-					sendMessageToClient("+OK 2 320\r\n");
+					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
 					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("LIST")) { // LIST
-					sendMessageToClient("+OK 2 messages (320 octets)\r\n");
+					sendMessageToClient("+OK " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
 					sendMessageToClient(".\r\n");
-					sendMessageToClient("1 120\r\n");
-					sendMessageToClient(".\r\n");
-					sendMessageToClient("2 200\r\n");
-					sendMessageToClient(".\r\n");
+					
+					for (int i = 0; i < fileArray.size(); i++) {
+						sendMessageToClient(i+1 + " " + fileSize(fileArray.get(i)) + "\r\n");
+						sendMessageToClient(".\r\n");
+					}
+					
+//					sendMessageToClient("+OK 2 messages (320 octets)\r\n");
+//					sendMessageToClient(".\r\n");
+//					sendMessageToClient("1 120\r\n");
+//					sendMessageToClient(".\r\n");
+//					sendMessageToClient("2 200\r\n");
+//					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("RETR")) { // RETR
 					sendMessageToClient("+OK 120 octets\r\n");
@@ -164,6 +179,25 @@ public class SocketServer extends Thread {
 			}
 
 		}
+	}
+	
+	public int fileSize(File file) {
+		return (int) file.length();
+	}
+	
+	public int numberOfMailMessages() {
+		return fileArray.size();
+	}
+	
+	public int getTotalMailSizeInOctets() {
+		int total = 0;
+		
+		for (int i = 0; i < fileArray.size(); i++) {
+			File f = fileArray.get(i);
+			total += f.length();
+		}
+		
+		return total;
 	}
 
 	public void output(String output) {
