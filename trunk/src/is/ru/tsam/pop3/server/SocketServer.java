@@ -94,29 +94,24 @@ public class SocketServer extends Thread {
 		while (true) {
 
 			if (state == ServerState.Authorize) {
-				
+
 				line = input.readLine();
 				System.out.println(line);
-				
+
 				if (line.startsWith("USER")) {
 					sendMessageToClient("+OK valid username now send PASS\r\n");
 					sendMessageToClient(".\r\n");
-				}	else if (line.startsWith("PASS")) {
+				}
+				else if (line.startsWith("PASS")) {
 					sendMessageToClient("+OK your pass is fine!\r\n");
 					sendMessageToClient(".\r\n");
 					state = ServerState.Transaction;
-				} else {
+				} 
+				else {
 					sendMessageToClient("-ERR\r\n");
 					sendMessageToClient(".\r\n");
 				}
-				
-//				else if (line.startsWith("AUTH")) {
-//					sendMessageToClient("-ERR\r\n");
-//					sendMessageToClient(".\r\n");
-//				} 	else if (line.startsWith("CAPA")) {
-//					sendMessageToClient("-ERR\r\n");
-//					sendMessageToClient(".\r\n");
-//				}
+
 				//sendMessageToClient("+OK maildrop locked and ready");
 				//state = ServerState.Transaction;
 			} else if (state == ServerState.Transaction) {
@@ -126,29 +121,29 @@ public class SocketServer extends Thread {
 
 				if (line.startsWith("STAT")) { // STAT
 					sendMessageToClient("+OK 2 320");
-				} else if (line.startsWith("LIST")) { // LIST
+				} 
+				else if (line.startsWith("LIST")) { // LIST
 					sendMessageToClient("+OK 2 messages (320 octets)");
 					sendMessageToClient("1 120");
 					sendMessageToClient("2 200");
-				} else if (line.startsWith("RETR")) { // RETR
+				} 
+				else if (line.startsWith("RETR")) { // RETR
 					sendMessageToClient("+OK 120 octets");
 					sendMessageToClient("+OK 200 octets");
-				} else if (line.startsWith("DELE")) { // DELE
+				} 
+				else if (line.startsWith("DELE")) { // DELE
 					sendMessageToClient("+OK message 1 deleted");
-				} else if (line.startsWith("NOOP")) { // NOOP
+				} 
+				else if (line.startsWith("NOOP")) { // NOOP
 					sendMessageToClient("+OK");
-				} else if (line.startsWith("REST")) { // REST
+				} 
+				else if (line.startsWith("REST")) { // REST
 					sendMessageToClient("+OK maildrop has 2 messages (320 octets)");
-				} else {
+				} 
+				else {
 					sendMessageToClient("-ERR\r\n");
 					sendMessageToClient(".\r\n");
 				}
-				
-//				else if (line.startsWith("AUTH")) {
-//					sendMessageToClient("-ERR");
-//				} else if (line.startsWith("CAPA")) {
-//					sendMessageToClient("-ERR");
-//				}
 
 			} else if (state == ServerState.Update) {
 
