@@ -64,6 +64,7 @@ public class SocketServer extends Thread {
 		users.put("palli", "12345");
 		fileArray = new ArrayList<File>();
 		fileArray.add(new File("mail.txt"));
+		fileArray.add(new File("mail_2.txt"));
 	}
 
 	/* Our server starts here */
@@ -144,12 +145,6 @@ public class SocketServer extends Thread {
 						sendMessageToClient(".\r\n");
 					}
 					
-//					sendMessageToClient("+OK 2 messages (320 octets)\r\n");
-//					sendMessageToClient(".\r\n");
-//					sendMessageToClient("1 120\r\n");
-//					sendMessageToClient(".\r\n");
-//					sendMessageToClient("2 200\r\n");
-//					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("RETR")) { // RETR
 					sendMessageToClient("+OK 120 octets\r\n");
