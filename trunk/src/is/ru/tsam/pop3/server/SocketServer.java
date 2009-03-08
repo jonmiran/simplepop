@@ -145,6 +145,7 @@ public class SocketServer extends Thread {
 					for (int i = 0; i < fileArray.size(); i++) {
 						sendMessageToClient(i+1 + " " + fileSizeInOctets(fileArray.get(i)) + "\r\n");
 						sendMessageToClient(getOneMailMessage(fileArray.get(i)));
+						sendMessageToClient(".");
 					}
 				} 
 				else if (line.startsWith("DELE")) { // DELE
