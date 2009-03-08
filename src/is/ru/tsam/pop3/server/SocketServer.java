@@ -22,9 +22,6 @@ import java.util.HashMap;
 interface ServerState {
 	int Authorize = 1;
 	int Transaction = 2;
-	int Update = 3;
-	int Quit = 4;
-	int Reciving = 5;
 }
 
 public class SocketServer extends Thread {
@@ -65,9 +62,7 @@ public class SocketServer extends Thread {
 		users.put("palli", "12345");
 		fileArray = new ArrayList<File>();
 		fileArray.add(new File("mail.txt"));
-		//fileArray.add(new File("mail_2.txt"));
-
-		getOneMailMessage(fileArray.get(0));
+		//fileArray.add(new File("mail_3.txt"));
 	}
 
 	/* Our server starts here */
@@ -78,30 +73,30 @@ public class SocketServer extends Thread {
 	/* Run method from Thread */
 	public void run() {
 		System.out.println(SocketServer.class.getSimpleName() + " waiting for connection on TCP port " + TCP_PORT);
-		//while (true) {
-		try {
+		while (true) {
+			try {
 
-			client = ss.accept();
+				client = ss.accept();
 
-			input = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			output = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+				input = new BufferedReader(new InputStreamReader(client.getInputStream()));
+				output = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
 
-		} catch (IOException e) {
-			System.err.println("Doh! " + e);
+			} catch (IOException e) {
+				System.err.println("Doh! " + e);
+			}
+
+			sendMessageToClient("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
+
+			state = ServerState.Authorize;
+
+			try {
+				work();
+			} catch (Exception e) {
+				System.out.println(e);
+				//reset();
+			}
+			reset();
 		}
-
-		sendMessageToClient("+OK Welcome to a " + SocketServer.class.getSimpleName() + " in java.");
-
-		state = ServerState.Authorize;
-
-		try {
-			work();
-		} catch (Exception e) {
-			System.out.println(e);
-			//reset();
-		}
-		//reset();
-		//}
 
 	}
 
@@ -111,8 +106,8 @@ public class SocketServer extends Thread {
 
 			if (state == ServerState.Authorize) {
 
-				line = input.readLine();
-				System.out.println(line);
+					line = input.readLine();
+					System.out.println(line);
 
 				if (line.startsWith("USER")) {
 					sendMessageToClient("+OK valid username now send PASS\r\n");
@@ -155,20 +150,18 @@ public class SocketServer extends Thread {
 					sendMessageToClient("+OK\r\n");
 				} 
 				else if (line.startsWith("REST")) { // REST
-					sendMessageToClient("+OK maildrop has " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
+					sendMessageToClient("+OK mailbox has " + numberOfMailMessages() + " messages (" + getTotalMailSizeInOctets() + " octets)\r\n");
 				} 
 				else if (line.startsWith("QUIT")) 
 				{
 					sendMessageToClient("+OK bye");
-						reset();
+					reset();
 				}
 				else {
 					sendMessageToClient("-ERR unidentified command\r\n");
 				}
 
-			} else if (state == ServerState.Update) {
-
-			}
+			} 
 
 		}
 	}
