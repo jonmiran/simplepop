@@ -26,14 +26,19 @@ interface ServerState {
 
 public class SocketServer extends Thread {
 
+	/* server state */
 	private static int state;
 
+	/* buffer to read input to */
 	private static BufferedReader input;
 
+	/* buffer to write output */
 	private static BufferedWriter output;
 
+	/* socket to client */
 	private static Socket client = null;
 
+	/* accepted users */
 	private static HashMap<String, String> users = null;
 
 	/* Time out */
@@ -120,25 +125,34 @@ public class SocketServer extends Thread {
 				System.out.println(line);
 
 				if (line.startsWith("STAT")) { // STAT
-					sendMessageToClient("+OK 2 320");
+					sendMessageToClient("+OK 2 320\r\n");
+					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("LIST")) { // LIST
-					sendMessageToClient("+OK 2 messages (320 octets)");
-					sendMessageToClient("1 120");
-					sendMessageToClient("2 200");
+					sendMessageToClient("+OK 2 messages (320 octets)\r\n");
+					sendMessageToClient(".\r\n");
+					sendMessageToClient("1 120\r\n");
+					sendMessageToClient(".\r\n");
+					sendMessageToClient("2 200\r\n");
+					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("RETR")) { // RETR
-					sendMessageToClient("+OK 120 octets");
-					sendMessageToClient("+OK 200 octets");
+					sendMessageToClient("+OK 120 octets\r\n");
+					sendMessageToClient(".\r\n");
+					sendMessageToClient("+OK 200 octets\r\n");
+					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("DELE")) { // DELE
-					sendMessageToClient("+OK message 1 deleted");
+					sendMessageToClient("+OK message 1 deleted\r\n");
+					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("NOOP")) { // NOOP
-					sendMessageToClient("+OK");
+					sendMessageToClient("+OK\r\n");
+					sendMessageToClient(".\r\n");
 				} 
 				else if (line.startsWith("REST")) { // REST
-					sendMessageToClient("+OK maildrop has 2 messages (320 octets)");
+					sendMessageToClient("+OK maildrop has 2 messages (320 octets)\r\n");
+					sendMessageToClient(".\r\n");
 				} 
 				else {
 					sendMessageToClient("-ERR\r\n");
