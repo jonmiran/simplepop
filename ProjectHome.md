@@ -1,0 +1,1 @@
+Verkefni unnið af Gunna, Svenna og Palla fyrir Tölvusamskipti.
